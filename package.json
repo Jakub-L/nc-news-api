@@ -1,7 +1,7 @@
 {
   "name": "nc-news-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend API supporting NC-news",
   "main": "listen.js",
   "scripts": {
     "setup-dbs": "psql -f db/setup.sql",
@@ -13,7 +13,11 @@
     "dev": "nodemon listen.js",
     "start": "node listen.js"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jakub-L/nc-news-api.git"
+  },
+  "author": "Jakub P. Lech",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
@@ -22,8 +26,12 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
     "mocha": "^6.0.2",
     "nodemon": "^1.18.10",
+    "prettier": "^1.16.4",
     "supertest": "^4.0.2"
   }
 }
