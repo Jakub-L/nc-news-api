@@ -8,18 +8,33 @@ const connection = require('../db/connection');
 
 const request = supertest(app);
 
-describe('/', () => {
-  // beforeEach(() => connection.seed.run());
+describe('NC-NEWS-API', () => {
+  beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
-
   describe('/api', () => {
-    it('GET status:200', () => {
-      return request
-        .get('/api')
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.ok).to.equal(true);
+    describe('/topics', () => {
+      describe('EXPECTED BEHAVIOUR', () => {
+        it('Returns array of all topics', () => {
+          expect(true).to.equal(false);
         });
+      });
+      describe('ERRORS', () => {});
     });
+    describe('/*', () => {
+      it('GET status:404 for invalid path', () => request
+        .get('/api/invalid')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal('Route Not Found');
+        }));
+    });
+  });
+  describe('/*', () => {
+    it('GET status:404 for invalid path', () => request
+      .get('/invalid')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).to.equal('Route Not Found');
+      }));
   });
 });
