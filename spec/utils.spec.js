@@ -32,4 +32,17 @@ describe('jsTimestampToPsql()', () => {
       expect(element).to.not.equal(input[index]);
     });
   });
+  it('Returns converted data with specified timestamp key', () => {
+    const input = [
+      { title: 'Lorem Ipsum', timestamp: 1546300800000 },
+      { title: 'Dolor Sit', timestamp: 1478100731000 },
+      { title: 'Amet Consectetur', timestamp: 1276642472000 },
+    ];
+    const expected = [
+      { title: 'Lorem Ipsum', timestamp: '2019-01-01T00:00:00.000Z' },
+      { title: 'Dolor Sit', timestamp: '2016-11-02T15:32:11.000Z' },
+      { title: 'Amet Consectetur', timestamp: '2010-06-15T22:54:32.000Z' },
+    ];
+    expect(jsTimestampToPsql(input, 'timestamp')).to.eql(expected);
+  });
 });
