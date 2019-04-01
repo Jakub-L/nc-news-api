@@ -6,4 +6,8 @@ module.exports = {
   env: {
     mocha: true,
   },
+  rules: {
+    'no-unused-vars': 0,
+    'func-names': 0,
+  },
 };
