@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { jsTimestampToPsql } = require('../utils/data-normalisation');
+const { jsTimestampToPsql, renameKeysOfObjects } = require('../utils/data-normalisation');
 
 describe('jsTimestampToPsql()', () => {
   it('Converts single-object array to have ISO-8601 based timestamp', () => {
@@ -44,5 +44,26 @@ describe('jsTimestampToPsql()', () => {
       { title: 'Amet Consectetur', timestamp: '2010-06-15T22:54:32.000Z' },
     ];
     expect(jsTimestampToPsql(input, 'timestamp')).to.eql(expected);
+  });
+});
+
+describe('renameKeysOfObjects()', () => {
+  it('Renames a key of a single-object array', () => {
+    const input = [{ test: 5 }];
+    const output = [{ chocolate: 5 }];
+    expect(renameKeysOfObjects(input, 'test', 'chocolate')).to.eql(output);
+  });
+  it('Renames keys of a multi-object array', () => {
+    const input = [{ test: 5 }, { test: 'abc' }, { test: true }];
+    const output = [{ chocolate: 5 }, { chocolate: 'abc' }, { chocolate: true }];
+    expect(renameKeysOfObjects(input, 'test', 'chocolate')).to.eql(output);
+  });
+  it('Does not mutate input array or objects inside of it', () => {
+    const input = [{ test: 5 }, { test: 'abc' }, { test: true }];
+    const output = renameKeysOfObjects(input, 'test', 'chocolate');
+    expect(output).to.not.equal(input);
+    output.forEach((element, index) => {
+      expect(element).to.not.equal(input[index]);
+    });
   });
 });
