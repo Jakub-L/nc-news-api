@@ -253,6 +253,39 @@ describe('NC-NEWS-API', () => {
                 expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
               });
           });
+          it('PATCH status:404 for non-existent article_id', () => {
+            return request
+              .patch('/api/articles/100')
+              .send({ inc_votes: 10 })
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('article_id Not Found');
+              });
+          });
+          it('PATCH status:400 for non-numeric article_id', () => {
+            return request
+              .patch('/api/articles/first')
+              .send({ inc_votes: 10 })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
+              });
+          });
+          it('PATCH status:400 for non-numeric inc_votes', () => {
+            return request
+              .patch('/api/articles/1')
+              .send({ inc_votes: 'two' })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Invalid Request. inc_votes must be numeric');
+              });
+          });
+          it('PATCH status:200 defaults to 0 for missing inc_votes', () => {
+            return request
+              .patch('/api/articles/1')
+              .send({})
+              .expect(200);
+          });
         });
       });
     });

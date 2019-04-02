@@ -23,7 +23,11 @@ exports.getArticleByID = (req, res, next) => {
 exports.updateArticleByID = (req, res, next) => {
   updateArticle(req.params.article_id, req.body)
     .then((updatedArticles) => {
-      res.status(200).json({ article: updatedArticles[0] });
+      if (updatedArticles.length === 0) {
+        next({ status: 404, msg: 'article_id Not Found' });
+      } else {
+        res.status(200).json({ article: updatedArticles[0] });
+      }
     })
     .catch(next);
 };

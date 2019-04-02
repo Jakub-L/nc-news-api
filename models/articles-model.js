@@ -41,7 +41,15 @@ const selectArticles = ({
     });
 };
 
-const updateArticle = (article_id, { inc_votes }) => {
+const updateArticle = (article_id, { inc_votes = 0 }) => {
+  // Error checking
+  if (Number.isNaN(+article_id)) {
+    return Promise.reject({ status: 400, msg: 'Invalid Request. article_id must be numeric' });
+  }
+  if (Number.isNaN(+inc_votes)) {
+    return Promise.reject({ status: 400, msg: 'Invalid Request. inc_votes must be numeric' });
+  }
+
   return connection('articles')
     .where({ article_id })
     .increment('votes', inc_votes)
