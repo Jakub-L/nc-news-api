@@ -211,6 +211,22 @@ describe('NC-NEWS-API', () => {
                 expect(body.msg).to.equal('Route Not Found');
               });
           });
+          it('GET status:404 for non-existent article_id', () => {
+            return request
+              .get('/api/articles/100')
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('article_id Not Found');
+              });
+          });
+          it('GET status:400 for non-numeric article_id', () => {
+            return request
+              .get('/api/articles/first')
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
+              });
+          });
         });
       });
     });

@@ -18,6 +18,9 @@ exports.selectArticles = (
   ];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
+  if (article_id !== undefined && Number.isNaN(+article_id)) {
+    return Promise.reject({ status: 400, msg: 'Invalid Request. article_id must be numeric' });
+  }
 
   return connection
     .select(
@@ -40,3 +43,4 @@ exports.selectArticles = (
       if (article_id) query.where({ 'articles.article_id': article_id });
     });
 };
+

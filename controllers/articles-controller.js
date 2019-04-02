@@ -1,4 +1,4 @@
-const { selectArticles } = require('../models/articles-model');
+const { selectArticles, updateArticle } = require('../models/articles-model');
 
 exports.getArticles = (req, res, next) => {
   selectArticles(req.query)
@@ -11,7 +11,12 @@ exports.getArticles = (req, res, next) => {
 exports.getArticleByID = (req, res, next) => {
   selectArticles(req.query, req.params.article_id)
     .then((articles) => {
-      res.status(200).json({ article: articles[0] });
+      if (articles.length === 0) {
+        next({ status: 404, msg: 'article_id Not Found' });
+      } else {
+        res.status(200).json({ article: articles[0] });
+      }
     })
     .catch(next);
 };
+
