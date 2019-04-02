@@ -311,6 +311,109 @@ describe('NC-NEWS-API', () => {
               });
           });
         });
+        describe('/comments', () => {
+          describe('DEFAULT BEHAVIOUR', () => {
+            it('GET status:200 returns array of comments', () => {
+              return request
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(({ body }) => {
+                  body.comments.forEach((comment) => {
+                    expect(comment).to.contain.keys(
+                      'comment_id',
+                      'votes',
+                      'created_at',
+                      'author',
+                      'body',
+                    );
+                  });
+                });
+            });
+            it('GET status:200 sorts results by descending created_at by default', () => {
+              return request
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.descendingBy('created_at');
+                });
+            });
+          });
+          describe('QUERIES', () => {
+            it('GET status:200 returns comments sorted by specified key', () => {
+              return request
+                .get('/api/articles/1/comments?sort_by=author')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.descendingBy('author');
+                });
+            });
+            it('GET status:200 returns comments sorted in specified order', () => {
+              return request
+                .get('/api/articles/1/comments?order=asc')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.ascendingBy('created_at');
+                });
+            });
+          });
+          describe('ERRORS', () => {
+            it('ALL status:405 for invalid methods', () => {
+              const invalid = ['post', 'put', 'delete', 'trace', 'options', 'patch'];
+              return Promise.all(
+                invalid.map((method) => {
+                  return request[method]('/api/articles/1/comments')
+                    .expect(405)
+                    .then(({ body }) => {
+                      expect(body.msg).to.equal('Method Not Allowed');
+                    });
+                }),
+              );
+            });
+            it('GET status:404 for invalid path', () => {
+              return request
+                .get('/api/articles/3/comments/invalid')
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('Route Not Found');
+                });
+            });
+            it('GET status:200 defaults to created_at for invalid sorting key', () => {
+              return request
+                .get('/api/articles/1/comments?sort_by=invalid')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.descendingBy('created_at');
+                });
+            });
+            it('GET status:200 defaults to descending for invalid sorting order', () => {
+              return request
+                .get('/api/articles/1/comments?order=up')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.be.descendingBy('created_at');
+                });
+            });
+            it('GET status:200 ignores invalid queries', () => {
+              return request.get('/api/articles/1/comments?upvoted=true').expect(200);
+            });
+            it('GET status:404 for non-existent article_id', () => {
+              return request
+                .get('/api/articles/100/comments')
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('article_id Not Found');
+                });
+            });
+            it('GET status:400 for non-numeric article_id', () => {
+              return request
+                .get('/api/articles/first/comments')
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
+                });
+            });
+          });
+        });
       });
     });
     describe('/*', () => {
