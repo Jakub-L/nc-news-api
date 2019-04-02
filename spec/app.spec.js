@@ -10,7 +10,7 @@ chai.use(require('chai-sorted'));
 const request = supertest(app);
 const { expect } = chai;
 
-describe('NC-NEWS-API', () => {
+describe.only('NC-NEWS-API', () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
   describe('/api', () => {
@@ -76,7 +76,7 @@ describe('NC-NEWS-API', () => {
               expect(body.articles[0].comment_count).to.equal('13');
             });
         });
-        it('GET status:200 sorts comments descendingly by date', () => {
+        it('GET status:200 sorts articles descending by date', () => {
           return request
             .get('/api/articles')
             .expect(200)
@@ -85,7 +85,51 @@ describe('NC-NEWS-API', () => {
             });
         });
       });
-      describe('QUERIES', () => {});
+      describe('QUERIES', () => {
+        it('GET status:200 returns articles filtered by author query', () => {
+          return request
+            .get('/api/articles?author=icellusedkars')
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach(article => expect(article.author).to.equal('icellusedkars'));
+            });
+        });
+        it('GET status:200 returns articles filtered by topic query', () => {
+          return request
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach(article => expect(article.topic).to.equal('mitch'));
+            });
+        });
+        it('GET status:200 returns articles filtered by topic and author queries', () => {
+          return request
+            .get('/api/articles?topic=mitch&author=icellusedkars')
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach((article) => {
+                expect(article.topic).to.equal('mitch');
+                expect(article.author).to.equal('icellusedkars');
+              });
+            });
+        });
+        it('GET status:200 sorts articles by provided query', () => {
+          return request
+            .get('/api/articles?sort_by=author')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy('author');
+            });
+        });
+        it('GET status:200 sorts ascending or descending by provided query', () => {
+          return request
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.ascendingBy('created_at');
+            });
+        });
+      });
       describe('ERRORS', () => {
         it('ALL status:405 for invalid methods', () => {
           const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
@@ -98,6 +142,25 @@ describe('NC-NEWS-API', () => {
                 });
             }),
           );
+        });
+        it('GET status:200 defaults to created_at for invalid sorting key', () => {
+          return request
+            .get('/api/articles?sort_by=invalid')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy('created_at');
+            });
+        });
+        it('GET status:200 defaults to descending for invalid sorting order', () => {
+          return request
+            .get('/api/articles?order=up')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy('created_at');
+            });
+        });
+        it('GET status:200 ignores invalid queries', () => {
+          return request.get('/api/articles?invalid=foobar').expect(200);
         });
       });
     });
