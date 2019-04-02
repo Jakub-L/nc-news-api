@@ -20,3 +20,10 @@ exports.getArticleByID = (req, res, next) => {
     .catch(next);
 };
 
+exports.updateArticleByID = (req, res, next) => {
+  updateArticle(req.params.article_id, req.body)
+    .then((updatedArticles) => {
+      res.status(200).json({ article: updatedArticles[0] });
+    })
+    .catch(next);
+};

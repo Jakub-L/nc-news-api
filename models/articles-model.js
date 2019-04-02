@@ -1,11 +1,8 @@
 const connection = require('../db/connection');
 
-exports.selectArticles = (
-  {
-    sort_by = 'created_at', order = 'desc', author, topic,
-  },
-  article_id,
-) => {
+const selectArticles = ({
+  sort_by = 'created_at', order = 'desc', author, topic,
+}, article_id) => {
   // Defaults checking
   const allowedSortingCriteria = [
     'author',
@@ -44,3 +41,13 @@ exports.selectArticles = (
     });
 };
 
+const updateArticle = (article_id, { inc_votes }) => {
+  return connection('articles')
+    .where({ article_id })
+    .increment('votes', inc_votes)
+    .then(() => {
+      return selectArticles({}, article_id);
+    });
+};
+
+module.exports = { selectArticles, updateArticle };

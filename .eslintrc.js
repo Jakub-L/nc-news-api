@@ -12,5 +12,6 @@ module.exports = {
     'arrow-body-style': 0,
     'no-param-reassign': 0,
     camelcase: 0,
+    'prefer-promise-reject-errors': 0,
   },
 };

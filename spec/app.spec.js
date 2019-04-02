@@ -189,10 +189,36 @@ describe('NC-NEWS-API', () => {
                 expect(body.article.comment_count).to.equal('13');
               });
           });
+          it('PATCH status:200 updates vote count and returns updated article', () => {
+            return request
+              .patch('/api/articles/1')
+              .send({ inc_votes: 10 })
+              .then(({ body }) => {
+                expect(body.article.votes).to.equal(110);
+                expect(body.article).to.contain.keys(
+                  'author',
+                  'title',
+                  'article_id',
+                  'body',
+                  'topic',
+                  'created_at',
+                  'votes',
+                  'comment_count',
+                );
+              });
+          });
+          it('PATCH status:200 accepts negative vote increments', () => {
+            return request
+              .patch('/api/articles/1')
+              .send({ inc_votes: -10 })
+              .then(({ body }) => {
+                expect(body.article.votes).to.equal(90);
+              });
+          });
         });
         describe('ERRORS', () => {
           it('ALL status:405 for invalid methods', () => {
-            const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+            const invalid = ['post', 'put', 'delete', 'options', 'trace'];
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/articles/1')
