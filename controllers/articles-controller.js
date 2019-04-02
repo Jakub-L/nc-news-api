@@ -1,4 +1,4 @@
-const { selectArticles, updateArticle } = require('../models/articles-model');
+const { selectArticles, updateArticle, deleteArticle } = require('../models/articles-model');
 
 exports.getArticles = (req, res, next) => {
   selectArticles(req.query)
@@ -29,5 +29,11 @@ exports.updateArticleByID = (req, res, next) => {
         res.status(200).json({ article: updatedArticles[0] });
       }
     })
+    .catch(next);
+};
+
+exports.removeArticleByID = (req, res, next) => {
+  deleteArticle(req.params.article_id)
+    .then(() => res.status(204).send())
     .catch(next);
 };

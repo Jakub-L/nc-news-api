@@ -215,10 +215,18 @@ describe('NC-NEWS-API', () => {
                 expect(body.article.votes).to.equal(90);
               });
           });
+          it('DELETE status:204 removes article', () => {
+            return request
+              .delete('/api/articles/1')
+              .expect(204)
+              .then(() => {
+                return request.get('/api/articles/1').expect(404);
+              });
+          });
         });
         describe('ERRORS', () => {
           it('ALL status:405 for invalid methods', () => {
-            const invalid = ['post', 'put', 'delete', 'options', 'trace'];
+            const invalid = ['post', 'put', 'options', 'trace'];
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/articles/1')
@@ -285,6 +293,22 @@ describe('NC-NEWS-API', () => {
               .patch('/api/articles/1')
               .send({})
               .expect(200);
+          });
+          it('DELETE status:404 for non-existent article_id', () => {
+            return request
+              .delete('/api/articles/100')
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('article_id Not Found');
+              });
+          });
+          it('DELETE status:400 for non-numeric article_id', () => {
+            return request
+              .delete('/api/articles/first')
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
+              });
           });
         });
       });

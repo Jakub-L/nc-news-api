@@ -4,6 +4,7 @@ const {
   getArticles,
   getArticleByID,
   updateArticleByID,
+  removeArticleByID,
 } = require('../controllers/articles-controller');
 
 articlesRouter
@@ -15,6 +16,7 @@ articlesRouter
   .route('/:article_id')
   .get(getArticleByID)
   .patch(updateArticleByID)
+  .delete(removeArticleByID)
   .all(methodNotAllowed);
 
 module.exports = articlesRouter;
