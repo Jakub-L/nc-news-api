@@ -3,6 +3,7 @@ const {
   updateArticle,
   deleteArticle,
   selectComments,
+  insertComment,
 } = require('../models/articles-model');
 
 exports.getArticles = (req, res, next) => {
@@ -46,5 +47,13 @@ exports.removeArticleByID = (req, res, next) => {
 exports.getCommentsByArticleID = (req, res, next) => {
   selectComments(req.params.article_id, req.query)
     .then(comments => res.status(200).json({ comments }))
+    .catch(next);
+};
+
+exports.addCommentToArticle = (req, res, next) => {
+  insertComment(req.params.article_id, req.body)
+    .then((comments) => {
+      res.status(201).json({ comment: comments[0] });
+    })
     .catch(next);
 };

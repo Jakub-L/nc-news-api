@@ -311,7 +311,7 @@ describe('NC-NEWS-API', () => {
               });
           });
         });
-        describe('/comments', () => {
+        describe.only('/comments', () => {
           describe('DEFAULT BEHAVIOUR', () => {
             it('GET status:200 returns array of comments', () => {
               return request
@@ -337,6 +337,25 @@ describe('NC-NEWS-API', () => {
                   expect(body.comments).to.be.descendingBy('created_at');
                 });
             });
+            it('POST status:201 adds comment to article', () => {
+              return request
+                .post('/api/articles/1/comments')
+                .send({ username: 'icellusedkars', body: 'Lorem Ipsum' })
+                .expect(201)
+                .then(({ body }) => {
+                  expect(body.comment).to.contain.keys(
+                    'comment_id',
+                    'votes',
+                    'created_at',
+                    'author',
+                    'body',
+                  );
+                  return request
+                    .get('/api/articles/1')
+                    .expect(200)
+                    .then(({ body: { article } }) => expect(article.comment_count).to.equal('14'));
+                });
+            });
           });
           describe('QUERIES', () => {
             it('GET status:200 returns comments sorted by specified key', () => {
@@ -358,7 +377,7 @@ describe('NC-NEWS-API', () => {
           });
           describe('ERRORS', () => {
             it('ALL status:405 for invalid methods', () => {
-              const invalid = ['post', 'put', 'delete', 'trace', 'options', 'patch'];
+              const invalid = ['put', 'delete', 'trace', 'options', 'patch'];
               return Promise.all(
                 invalid.map((method) => {
                   return request[method]('/api/articles/1/comments')
@@ -410,6 +429,42 @@ describe('NC-NEWS-API', () => {
                 .expect(400)
                 .then(({ body }) => {
                   expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
+                });
+            });
+            it('POST status:404 for non-existent article_id', () => {
+              return request
+                .post('/api/articles/100/comments')
+                .send({ username: 'icellusedkars', body: 'lorem' })
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('article_id Not Found');
+                });
+            });
+            it('POST status:400 for non-numeric article_id', () => {
+              return request
+                .post('/api/articles/first/comments')
+                .send({ username: 'icellusedkars', body: 'lorem' })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
+                });
+            });
+            it('POST status:400 for non-existent username', () => {
+              return request
+                .post('/api/articles/1/comments')
+                .send({ username: 'geoff', body: 'lorem' })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('Invalid Request. Non-existent author');
+                });
+            });
+            it('POST status:400 for empty body', () => {
+              return request
+                .post('/api/articles/1/comments')
+                .send({ username: 'geoff', body: '' })
+                .expect(400)
+                .then(({ body }) => {
+                  expect(body.msg).to.equal('Invalid Request. body must not be empty');
                 });
             });
           });

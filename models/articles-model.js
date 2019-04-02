@@ -102,9 +102,45 @@ const selectComments = (article_id, { sort_by = 'created_at', order = 'desc' }) 
     });
 };
 
+const insertComment = (article_id, { username: author, body }) => {
+  // Error checking
+  if (Number.isNaN(+article_id)) {
+    return Promise.reject({ status: 400, msg: 'Invalid Request. article_id must be numeric' });
+  }
+  if (body.length === 0) {
+    return Promise.reject({ status: 400, msg: 'Invalid Request. body must not be empty' });
+  }
+  return connection
+    .select('article_id')
+    .from('articles')
+    .where({ article_id })
+    .then((rows) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'article_id Not Found' });
+      }
+    })
+    .then(() => {
+      return connection
+        .select('username')
+        .from('users')
+        .where({ username: author });
+    })
+    .then((rows) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 400, msg: 'Invalid Request. Non-existent author' });
+      }
+    })
+    .then(() => {
+      return connection
+        .insert({ article_id, author, body })
+        .into('comments')
+        .returning(['comment_id', 'votes', 'created_at', 'author', 'body']);
+    });
+};
 module.exports = {
   selectArticles,
   updateArticle,
   deleteArticle,
   selectComments,
+  insertComment,
 };
