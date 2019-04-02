@@ -9,5 +9,6 @@ module.exports = {
   rules: {
     'no-unused-vars': 0,
     'func-names': 0,
+    'arrow-body-style': 0,
   },
 };
