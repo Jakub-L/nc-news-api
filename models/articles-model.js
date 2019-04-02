@@ -1,10 +1,21 @@
 const connection = require('../db/connection');
 
-exports.selectArticles = ({
-  sort_by = 'created_at', order = 'desc', author, topic,
-}) => {
+exports.selectArticles = (
+  {
+    sort_by = 'created_at', order = 'desc', author, topic,
+  },
+  article_id,
+) => {
   // Defaults checking
-  const allowedSortingCriteria = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes'];
+  const allowedSortingCriteria = [
+    'author',
+    'title',
+    'article_id',
+    'body',
+    'topic',
+    'created_at',
+    'votes',
+  ];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
 
@@ -13,6 +24,7 @@ exports.selectArticles = ({
       'articles.author',
       'title',
       'articles.article_id',
+      'articles.body',
       'topic',
       'articles.created_at',
       'articles.votes',
@@ -25,5 +37,6 @@ exports.selectArticles = ({
     .modify((query) => {
       if (author) query.where({ 'articles.author': author });
       if (topic) query.where({ topic });
+      if (article_id) query.where({ 'articles.article_id': article_id });
     });
 };

@@ -7,3 +7,11 @@ exports.getArticles = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getArticleByID = (req, res, next) => {
+  selectArticles(req.query, req.params.article_id)
+    .then((articles) => {
+      res.status(200).json({ article: articles[0] });
+    })
+    .catch(next);
+};
