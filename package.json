@@ -9,7 +9,8 @@
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "test": "mocha ./spec/*.spec.js",
-    "seed": "knex seed:run",
+    "test-utils": "mocha ./spec/utils.spec.js",
+    "seed": "NODE_ENV=test knex seed:run",
     "dev": "nodemon listen.js",
     "start": "node listen.js"
   },
@@ -21,11 +22,12 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "knex": "^0.16.3",
+    "knex": "^0.16.4-next2",
     "pg": "^7.9.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "chai-sorted": "^0.2.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
