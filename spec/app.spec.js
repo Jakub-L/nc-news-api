@@ -14,6 +14,29 @@ describe('NC-NEWS-API', () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
   describe('/api', () => {
+    describe('DEFAULT BEHAVIOUR', () => {
+      it('GET status:200 returns object containing all api calls', () => {
+        return request
+          .get('/api')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.endpoints).to.contain.keys('GET /api');
+          });
+      });
+    });
+    describe('ERRORS', () => {
+      it('GET status:404 for invalid path', () => {
+        return request.get('/api/invalid').expect(404);
+      });
+      it('ALL status:405 for invalid methods', () => {
+        const invalid = ['post', 'put', 'delete', 'patch', 'options', 'trace'];
+        return Promise.all(
+          invalid.map((method) => {
+            return request[method]('/api').expect(405);
+          }),
+        );
+      });
+    });
     describe('/topics', () => {
       describe('DEFAULT BEHAVIOUR', () => {
         it('GET status:200 returns array of all topics', () => {
@@ -298,6 +321,7 @@ describe('NC-NEWS-API', () => {
                     'created_at',
                     'author',
                     'body',
+                    'article_id',
                   );
                   return request
                     .get('/api/articles/1')
@@ -373,16 +397,22 @@ describe('NC-NEWS-API', () => {
                 .send({ username: 'icellusedkars', body: 'lorem' })
                 .expect(400);
             });
-            it('POST status:400 for non-existent username', () => {
+            it('POST status:422 for non-existent username', () => {
               return request
                 .post('/api/articles/1/comments')
                 .send({ username: 'geoff', body: 'lorem' })
-                .expect(400);
+                .expect(422);
             });
             it('POST status:400 for empty body', () => {
               return request
                 .post('/api/articles/1/comments')
-                .send({ username: 'geoff', body: '' })
+                .send({ username: 'icellusedkars', body: '' })
+                .expect(400);
+            });
+            it('POST status:400 for body containing too many keys', () => {
+              return request
+                .post('/api/articles/1/comments')
+                .send({ username: 'icellusedkars', body: 'included', length: 20 })
                 .expect(400);
             });
           });
@@ -484,22 +514,18 @@ describe('NC-NEWS-API', () => {
           });
         });
       });
-      describe('/*', () => {
-        describe('ERRORS', () => {
-          it('GET status:404 for invalid path', () => {
-            return request.get('/api/comments/1/invalid').expect(404);
-          });
-        });
-      });
     });
     describe('/users', () => {
       describe('/:username', () => {
         describe('DEFAULT BEHAVIOUR', () => {
           it('GET status:200 returns correct user object', () => {
-            return request.get('/api/users/icellusedkars').expect(200).then(({ body }) => {
-              expect(body.user).to.contain.keys('username', 'avatar_url', 'name');
-              expect(body.user.name).to.equal('sam');
-            });
+            return request
+              .get('/api/users/icellusedkars')
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.user).to.contain.keys('username', 'avatar_url', 'name');
+                expect(body.user.name).to.equal('sam');
+              });
           });
         });
         describe('ERRORS', () => {
@@ -521,11 +547,7 @@ describe('NC-NEWS-API', () => {
       });
     });
     describe('/*', () => {
-      describe('ERRORS', () => {
-        it('GET status:404 for invalid path', () => {
-          return request.get('/api/invalid').expect(404);
-        });
-      });
+      describe('ERRORS', () => {});
     });
   });
   describe('/*', () => {
