@@ -18,7 +18,7 @@ exports.getArticleByID = (req, res, next) => {
   selectArticles(req.query, req.params.article_id)
     .then((articles) => {
       if (articles.length === 0) {
-        next({ status: 404, msg: 'article_id Not Found' });
+        next({ status: 404 });
       } else {
         res.status(200).json({ article: articles[0] });
       }
@@ -30,7 +30,7 @@ exports.updateArticleByID = (req, res, next) => {
   updateArticle(req.params.article_id, req.body)
     .then((updatedArticles) => {
       if (updatedArticles.length === 0) {
-        next({ status: 404, msg: 'article_id Not Found' });
+        next({ status: 404 });
       } else {
         res.status(200).json({ article: updatedArticles[0] });
       }

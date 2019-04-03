@@ -4,7 +4,7 @@ exports.updateCommentByID = (req, res, next) => {
   updateComment(req.params.comment_id, req.body)
     .then((updatedComments) => {
       if (updatedComments.length === 0) {
-        res.status(404).json({ msg: 'comment_id Not Found' });
+        next({ status: 404 });
       } else {
         res.status(200).json({ comment: updatedComments[0] });
       }
