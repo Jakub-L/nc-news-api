@@ -311,7 +311,7 @@ describe('NC-NEWS-API', () => {
               });
           });
         });
-        describe.only('/comments', () => {
+        describe('/comments', () => {
           describe('DEFAULT BEHAVIOUR', () => {
             it('GET status:200 returns array of comments', () => {
               return request
@@ -467,6 +467,115 @@ describe('NC-NEWS-API', () => {
                   expect(body.msg).to.equal('Invalid Request. body must not be empty');
                 });
             });
+          });
+        });
+      });
+    });
+    describe.only('/comments', () => {
+      describe('/:comment_id', () => {
+        describe('DEFAULT BEHAVIOUR', () => {
+          it('PATCH status:200 returns updated comment', () => {
+            return request
+              .patch('/api/comments/1')
+              .send({ inc_votes: 1 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.comment).to.contain.keys(
+                  'comment_id',
+                  'votes',
+                  'created_at',
+                  'author',
+                  'body',
+                );
+              });
+          });
+          it('PATCH status:200 updates comment votes', () => {
+            return request
+              .patch('/api/comments/1')
+              .send({ inc_votes: 1 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.comment.votes).to.equal(17);
+              });
+          });
+          it('PATCH status:200 accepts negative inc_votes', () => {
+            return request
+              .patch('/api/comments/1')
+              .send({ inc_votes: -1 })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.comment.votes).to.equal(15);
+              });
+          });
+        });
+        describe('ERRORS', () => {
+          it('GET status:404 for invalid path', () => {
+            return request
+              .get('/api/comments/1/invalid')
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Route Not Found');
+              });
+          });
+          it('ALL status:405 for invalid methods', () => {
+            const invalid = ['get', 'post', 'put', 'delete', 'options', 'trace'];
+            return Promise.all(
+              invalid.map((method) => {
+                return request[method]('/api/comments/1')
+                  .expect(405)
+                  .then(({ body }) => {
+                    expect(body.msg).to.equal('Method Not Allowed');
+                  });
+              }),
+            );
+          });
+          it('PATCH status:404 for non-existent comment_id', () => {
+            return request
+              .patch('/api/comments/100')
+              .send({ inc_votes: 1 })
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('comment_id Not Found');
+              });
+          });
+          it('PATCH status:400 for non-numeric comment_id', () => {
+            return request
+              .patch('/api/comments/first')
+              .send({ inc_votes: 1 })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Invalid Request. comment_id must be numeric');
+              });
+          });
+          it('PATCH status:400 for non-numeric inc_votes', () => {
+            return request
+              .patch('/api/comments/1')
+              .send({ inc_votes: 'apple' })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Invalid Request. inc_votes must be numeric');
+              });
+          });
+          it('PATCH status:200 defaults to 0 for missing inc_votes', () => {
+            return request
+              .patch('/api/comments/1')
+              .send({ })
+              .expect(200)
+              .then(({ body }) => {
+                expect(body.comment.votes).to.equal(16);
+              });
+          });
+        });
+      });
+      describe('/*', () => {
+        describe('ERRORS', () => {
+          it('GET status:404 for invalid path', () => {
+            return request
+              .get('/api/comments/1/invalid')
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).to.equal('Route Not Found');
+              });
           });
         });
       });
