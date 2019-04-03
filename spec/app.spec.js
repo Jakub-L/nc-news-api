@@ -32,9 +32,6 @@ describe('NC-NEWS-API', () => {
           return request
             .get('/api/topics/invalid')
             .expect(404)
-            .then(({ body }) => {
-              expect(body.msg).to.equal('Route Not Found');
-            });
         });
         it('ALL status:405 for invalid methods', () => {
           const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
@@ -42,9 +39,6 @@ describe('NC-NEWS-API', () => {
             invalid.map((method) => {
               return request[method]('/api/topics')
                 .expect(405)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Method Not Allowed');
-                });
             }),
           );
         });
@@ -138,9 +132,6 @@ describe('NC-NEWS-API', () => {
             invalid.map((method) => {
               return request[method]('/api/articles')
                 .expect(405)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Method Not Allowed');
-                });
             }),
           );
         });
@@ -231,9 +222,6 @@ describe('NC-NEWS-API', () => {
               invalid.map((method) => {
                 return request[method]('/api/articles/1')
                   .expect(405)
-                  .then(({ body }) => {
-                    expect(body.msg).to.equal('Method Not Allowed');
-                  });
               }),
             );
           });
@@ -241,52 +229,34 @@ describe('NC-NEWS-API', () => {
             return request
               .get('/api/articles/3/invalid')
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Route Not Found');
-              });
           });
           it('GET status:404 for non-existent article_id', () => {
             return request
               .get('/api/articles/100')
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('article_id Not Found');
-              });
           });
           it('GET status:400 for non-numeric article_id', () => {
             return request
               .get('/api/articles/first')
               .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
-              });
           });
           it('PATCH status:404 for non-existent article_id', () => {
             return request
               .patch('/api/articles/100')
               .send({ inc_votes: 10 })
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('article_id Not Found');
-              });
           });
           it('PATCH status:400 for non-numeric article_id', () => {
             return request
               .patch('/api/articles/first')
               .send({ inc_votes: 10 })
               .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
-              });
           });
           it('PATCH status:400 for non-numeric inc_votes', () => {
             return request
               .patch('/api/articles/1')
               .send({ inc_votes: 'two' })
               .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Invalid Request. inc_votes must be numeric');
-              });
           });
           it('PATCH status:200 defaults to 0 for missing inc_votes', () => {
             return request
@@ -298,17 +268,11 @@ describe('NC-NEWS-API', () => {
             return request
               .delete('/api/articles/100')
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('article_id Not Found');
-              });
           });
           it('DELETE status:400 for non-numeric article_id', () => {
             return request
               .delete('/api/articles/first')
               .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
-              });
           });
         });
         describe('/comments', () => {
@@ -382,9 +346,6 @@ describe('NC-NEWS-API', () => {
                 invalid.map((method) => {
                   return request[method]('/api/articles/1/comments')
                     .expect(405)
-                    .then(({ body }) => {
-                      expect(body.msg).to.equal('Method Not Allowed');
-                    });
                 }),
               );
             });
@@ -392,9 +353,6 @@ describe('NC-NEWS-API', () => {
               return request
                 .get('/api/articles/3/comments/invalid')
                 .expect(404)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Route Not Found');
-                });
             });
             it('GET status:200 defaults to created_at for invalid sorting key', () => {
               return request
@@ -419,59 +377,41 @@ describe('NC-NEWS-API', () => {
               return request
                 .get('/api/articles/100/comments')
                 .expect(404)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('article_id Not Found');
-                });
             });
             it('GET status:400 for non-numeric article_id', () => {
               return request
                 .get('/api/articles/first/comments')
                 .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
-                });
             });
             it('POST status:404 for non-existent article_id', () => {
               return request
                 .post('/api/articles/100/comments')
                 .send({ username: 'icellusedkars', body: 'lorem' })
                 .expect(404)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('article_id Not Found');
-                });
             });
             it('POST status:400 for non-numeric article_id', () => {
               return request
                 .post('/api/articles/first/comments')
                 .send({ username: 'icellusedkars', body: 'lorem' })
                 .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Invalid Request. article_id must be numeric');
-                });
             });
             it('POST status:400 for non-existent username', () => {
               return request
                 .post('/api/articles/1/comments')
                 .send({ username: 'geoff', body: 'lorem' })
                 .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Invalid Request. Non-existent author');
-                });
             });
             it('POST status:400 for empty body', () => {
               return request
                 .post('/api/articles/1/comments')
                 .send({ username: 'geoff', body: '' })
                 .expect(400)
-                .then(({ body }) => {
-                  expect(body.msg).to.equal('Invalid Request. body must not be empty');
-                });
             });
           });
         });
       });
     });
-    describe.only('/comments', () => {
+    describe('/comments', () => {
       describe('/:comment_id', () => {
         describe('DEFAULT BEHAVIOUR', () => {
           it('PATCH status:200 returns updated comment', () => {
@@ -513,9 +453,6 @@ describe('NC-NEWS-API', () => {
             return request
               .get('/api/comments/1/invalid')
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Route Not Found');
-              });
           });
           it('ALL status:405 for invalid methods', () => {
             const invalid = ['get', 'post', 'put', 'delete', 'options', 'trace'];
@@ -523,9 +460,6 @@ describe('NC-NEWS-API', () => {
               invalid.map((method) => {
                 return request[method]('/api/comments/1')
                   .expect(405)
-                  .then(({ body }) => {
-                    expect(body.msg).to.equal('Method Not Allowed');
-                  });
               }),
             );
           });
@@ -534,27 +468,18 @@ describe('NC-NEWS-API', () => {
               .patch('/api/comments/100')
               .send({ inc_votes: 1 })
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('comment_id Not Found');
-              });
           });
           it('PATCH status:400 for non-numeric comment_id', () => {
             return request
               .patch('/api/comments/first')
               .send({ inc_votes: 1 })
               .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Invalid Request. comment_id must be numeric');
-              });
           });
           it('PATCH status:400 for non-numeric inc_votes', () => {
             return request
               .patch('/api/comments/1')
               .send({ inc_votes: 'apple' })
               .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Invalid Request. inc_votes must be numeric');
-              });
           });
           it('PATCH status:200 defaults to 0 for missing inc_votes', () => {
             return request
@@ -573,9 +498,6 @@ describe('NC-NEWS-API', () => {
             return request
               .get('/api/comments/1/invalid')
               .expect(404)
-              .then(({ body }) => {
-                expect(body.msg).to.equal('Route Not Found');
-              });
           });
         });
       });
@@ -586,9 +508,6 @@ describe('NC-NEWS-API', () => {
           return request
             .get('/api/invalid')
             .expect(404)
-            .then(({ body }) => {
-              expect(body.msg).to.equal('Route Not Found');
-            });
         });
       });
     });
@@ -599,9 +518,6 @@ describe('NC-NEWS-API', () => {
         return request
           .get('/invalid')
           .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).to.equal('Route Not Found');
-          });
       });
     });
   });
