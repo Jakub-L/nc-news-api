@@ -7,4 +7,10 @@ const updateComment = (comment_id, { inc_votes = 0 }) => {
     .returning(['comment_id', 'votes', 'created_at', 'author', 'body']);
 };
 
-module.exports = { updateComment };
+const deleteComment = (comment_id) => {
+  return connection('comments')
+    .where({ comment_id })
+    .del();
+};
+
+module.exports = { updateComment, deleteComment };
