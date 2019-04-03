@@ -35,7 +35,10 @@ exports.updateArticleByID = (req, res, next) => {
 
 exports.removeArticleByID = (req, res, next) => {
   deleteArticle(req.params.article_id)
-    .then(() => res.status(204).send())
+    .then((success) => {
+      if (!success) next({ status: 404 });
+      else res.status(204).send();
+    })
     .catch(next);
 };
 
@@ -46,9 +49,13 @@ exports.getCommentsByArticleID = (req, res, next) => {
 };
 
 exports.addCommentToArticle = (req, res, next) => {
-  insertComment(req.params.article_id, req.body)
-    .then((comments) => {
-      res.status(201).json({ comment: comments[0] });
-    })
-    .catch(next);
+  const { body } = req.body;
+  if (!body) next({ status: 400 });
+  else {
+    insertComment(req.params.article_id, req.body)
+      .then(([comment]) => {
+        res.status(201).json({ comment });
+      })
+      .catch(next);
+  }
 };

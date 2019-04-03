@@ -48,12 +48,9 @@ const updateArticle = (article_id, { inc_votes = 0 }) => {
 };
 
 const deleteArticle = (article_id) => {
-  return selectArticles({ article_id }).then(([article]) => {
-    if (!article) return Promise.reject({ status: 404 });
-    return connection('articles')
-      .where('article_id', article_id)
-      .del();
-  });
+  return connection('articles')
+    .where('article_id', article_id)
+    .del();
 };
 
 const selectComments = (article_id, { sort_by = 'created_at', order = 'desc' }) => {
@@ -72,14 +69,11 @@ const selectComments = (article_id, { sort_by = 'created_at', order = 'desc' }) 
   });
 };
 
-const insertComment = (article_id, { username: author, body }) => {
-  return selectArticles({ article_id }).then(([article]) => {
-    if (!article) return Promise.reject({ status: 404 });
-    return connection
-      .insert({ article_id, author, body })
-      .into('comments')
-      .returning(['comment_id', 'votes', 'created_at', 'author', 'body']);
-  });
+const insertComment = (article_id, { username: author, ...commentRemainder }) => {
+  return connection
+    .insert({ article_id, author, ...commentRemainder })
+    .into('comments')
+    .returning(['article_id', 'comment_id', 'votes', 'created_at', 'author', 'body']);
 };
 module.exports = {
   selectArticles,
