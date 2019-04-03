@@ -492,6 +492,34 @@ describe('NC-NEWS-API', () => {
         });
       });
     });
+    describe('/users', () => {
+      describe('/:username', () => {
+        describe('DEFAULT BEHAVIOUR', () => {
+          it('GET status:200 returns correct user object', () => {
+            return request.get('/api/users/icellusedkars').expect(200).then(({ body }) => {
+              expect(body.user).to.contain.keys('username', 'avatar_url', 'name');
+              expect(body.user.name).to.equal('sam');
+            });
+          });
+        });
+        describe('ERRORS', () => {
+          it('GET status:404 for invalid path', () => {
+            return request.get('/api/users/icellusedkars/invalid').expect(404);
+          });
+          it('ALL status:405 for invalid methods', () => {
+            const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+            return Promise.all(
+              invalid.map((method) => {
+                return request[method]('/api/users/icellusedkars').expect(405);
+              }),
+            );
+          });
+          it('GET status:404 for non-existent username', () => {
+            return request.get('/api/users/adam').expect(404);
+          })
+        });
+      });
+    });
     describe('/*', () => {
       describe('ERRORS', () => {
         it('GET status:404 for invalid path', () => {
