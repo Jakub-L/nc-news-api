@@ -516,7 +516,7 @@ describe('NC-NEWS-API', () => {
           });
           it('GET status:404 for non-existent username', () => {
             return request.get('/api/users/adam').expect(404);
-          })
+          });
         });
       });
     });
