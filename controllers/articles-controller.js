@@ -16,24 +16,18 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleByID = (req, res, next) => {
   selectArticles(req.query, req.params.article_id)
-    .then((articles) => {
-      if (articles.length === 0) {
-        next({ status: 404 });
-      } else {
-        res.status(200).json({ article: articles[0] });
-      }
+    .then(([article]) => {
+      if (!article) next({ status: 404 });
+      else res.status(200).json({ article });
     })
     .catch(next);
 };
 
 exports.updateArticleByID = (req, res, next) => {
   updateArticle(req.params.article_id, req.body)
-    .then((updatedArticles) => {
-      if (updatedArticles.length === 0) {
-        next({ status: 404 });
-      } else {
-        res.status(200).json({ article: updatedArticles[0] });
-      }
+    .then(([article]) => {
+      if (!article) next({ status: 404 });
+      else res.status(200).json({ article });
     })
     .catch(next);
 };
