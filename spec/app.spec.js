@@ -31,14 +31,14 @@ describe('NC-NEWS-API', () => {
         it('GET status:404 for invalid path', () => {
           return request
             .get('/api/topics/invalid')
-            .expect(404)
+            .expect(404);
         });
         it('ALL status:405 for invalid methods', () => {
           const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/topics')
-                .expect(405)
+                .expect(405);
             }),
           );
         });
@@ -131,7 +131,7 @@ describe('NC-NEWS-API', () => {
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/articles')
-                .expect(405)
+                .expect(405);
             }),
           );
         });
@@ -221,42 +221,42 @@ describe('NC-NEWS-API', () => {
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/articles/1')
-                  .expect(405)
+                  .expect(405);
               }),
             );
           });
           it('GET status:404 for invalid path', () => {
             return request
               .get('/api/articles/3/invalid')
-              .expect(404)
+              .expect(404);
           });
           it('GET status:404 for non-existent article_id', () => {
             return request
               .get('/api/articles/100')
-              .expect(404)
+              .expect(404);
           });
           it('GET status:400 for non-numeric article_id', () => {
             return request
               .get('/api/articles/first')
-              .expect(400)
+              .expect(400);
           });
           it('PATCH status:404 for non-existent article_id', () => {
             return request
               .patch('/api/articles/100')
               .send({ inc_votes: 10 })
-              .expect(404)
+              .expect(404);
           });
           it('PATCH status:400 for non-numeric article_id', () => {
             return request
               .patch('/api/articles/first')
               .send({ inc_votes: 10 })
-              .expect(400)
+              .expect(400);
           });
           it('PATCH status:400 for non-numeric inc_votes', () => {
             return request
               .patch('/api/articles/1')
               .send({ inc_votes: 'two' })
-              .expect(400)
+              .expect(400);
           });
           it('PATCH status:200 defaults to 0 for missing inc_votes', () => {
             return request
@@ -267,12 +267,12 @@ describe('NC-NEWS-API', () => {
           it('DELETE status:404 for non-existent article_id', () => {
             return request
               .delete('/api/articles/100')
-              .expect(404)
+              .expect(404);
           });
           it('DELETE status:400 for non-numeric article_id', () => {
             return request
               .delete('/api/articles/first')
-              .expect(400)
+              .expect(400);
           });
         });
         describe('/comments', () => {
@@ -345,14 +345,14 @@ describe('NC-NEWS-API', () => {
               return Promise.all(
                 invalid.map((method) => {
                   return request[method]('/api/articles/1/comments')
-                    .expect(405)
+                    .expect(405);
                 }),
               );
             });
             it('GET status:404 for invalid path', () => {
               return request
                 .get('/api/articles/3/comments/invalid')
-                .expect(404)
+                .expect(404);
             });
             it('GET status:200 defaults to created_at for invalid sorting key', () => {
               return request
@@ -376,36 +376,36 @@ describe('NC-NEWS-API', () => {
             it('GET status:404 for non-existent article_id', () => {
               return request
                 .get('/api/articles/100/comments')
-                .expect(404)
+                .expect(404);
             });
             it('GET status:400 for non-numeric article_id', () => {
               return request
                 .get('/api/articles/first/comments')
-                .expect(400)
+                .expect(400);
             });
             it('POST status:404 for non-existent article_id', () => {
               return request
                 .post('/api/articles/100/comments')
                 .send({ username: 'icellusedkars', body: 'lorem' })
-                .expect(404)
+                .expect(404);
             });
             it('POST status:400 for non-numeric article_id', () => {
               return request
                 .post('/api/articles/first/comments')
                 .send({ username: 'icellusedkars', body: 'lorem' })
-                .expect(400)
+                .expect(400);
             });
             it('POST status:400 for non-existent username', () => {
               return request
                 .post('/api/articles/1/comments')
                 .send({ username: 'geoff', body: 'lorem' })
-                .expect(400)
+                .expect(400);
             });
             it('POST status:400 for empty body', () => {
               return request
                 .post('/api/articles/1/comments')
                 .send({ username: 'geoff', body: '' })
-                .expect(400)
+                .expect(400);
             });
           });
         });
@@ -452,14 +452,14 @@ describe('NC-NEWS-API', () => {
           it('GET status:404 for invalid path', () => {
             return request
               .get('/api/comments/1/invalid')
-              .expect(404)
+              .expect(404);
           });
           it('ALL status:405 for invalid methods', () => {
             const invalid = ['get', 'post', 'put', 'delete', 'options', 'trace'];
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/comments/1')
-                  .expect(405)
+                  .expect(405);
               }),
             );
           });
@@ -467,19 +467,19 @@ describe('NC-NEWS-API', () => {
             return request
               .patch('/api/comments/100')
               .send({ inc_votes: 1 })
-              .expect(404)
+              .expect(404);
           });
           it('PATCH status:400 for non-numeric comment_id', () => {
             return request
               .patch('/api/comments/first')
               .send({ inc_votes: 1 })
-              .expect(400)
+              .expect(400);
           });
           it('PATCH status:400 for non-numeric inc_votes', () => {
             return request
               .patch('/api/comments/1')
               .send({ inc_votes: 'apple' })
-              .expect(400)
+              .expect(400);
           });
           it('PATCH status:200 defaults to 0 for missing inc_votes', () => {
             return request
@@ -497,7 +497,7 @@ describe('NC-NEWS-API', () => {
           it('GET status:404 for invalid path', () => {
             return request
               .get('/api/comments/1/invalid')
-              .expect(404)
+              .expect(404);
           });
         });
       });
@@ -507,7 +507,7 @@ describe('NC-NEWS-API', () => {
         it('GET status:404 for invalid path', () => {
           return request
             .get('/api/invalid')
-            .expect(404)
+            .expect(404);
         });
       });
     });
@@ -517,7 +517,7 @@ describe('NC-NEWS-API', () => {
       it('GET status:404 for invalid path', () => {
         return request
           .get('/invalid')
-          .expect(404)
+          .expect(404);
       });
     });
   });
