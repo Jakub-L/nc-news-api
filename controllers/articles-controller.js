@@ -15,7 +15,8 @@ exports.getArticles = (req, res, next) => {
 };
 
 exports.getArticleByID = (req, res, next) => {
-  selectArticles(req.query, req.params.article_id)
+  const { article_id } = req.params;
+  selectArticles({ ...req.query, article_id })
     .then(([article]) => {
       if (!article) next({ status: 404 });
       else res.status(200).json({ article });

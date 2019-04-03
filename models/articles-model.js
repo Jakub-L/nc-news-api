@@ -1,8 +1,8 @@
 const connection = require('../db/connection');
 
 const selectArticles = ({
-  sort_by = 'created_at', order = 'desc', author, topic,
-}, article_id) => {
+  sort_by = 'created_at', order = 'desc', author, topic, article_id,
+}) => {
   // Defaults checking
   const allowedSortingCriteria = [
     'author',
@@ -54,7 +54,7 @@ const updateArticle = (article_id, { inc_votes = 0 }) => {
     .where({ article_id })
     .increment('votes', inc_votes)
     .then(() => {
-      return selectArticles({}, article_id);
+      return selectArticles({ article_id });
     });
 };
 
@@ -116,7 +116,7 @@ const insertComment = (article_id, { username: author, body }) => {
     .where({ article_id })
     .then((rows) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: 'article_id Not Found' });
+        return Promise.reject({ status: 404 });
       }
     })
     .then(() => {
@@ -127,7 +127,7 @@ const insertComment = (article_id, { username: author, body }) => {
     })
     .then((rows) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 400, msg: 'Invalid Request. Non-existent author' });
+        return Promise.reject({ status: 400 });
       }
     })
     .then(() => {
