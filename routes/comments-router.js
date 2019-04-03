@@ -1,6 +1,6 @@
 const commentsRouter = require('express').Router();
 const { methodNotAllowed } = require('../errors');
-const { updateCommentByID} = require('../controllers/comments-controller');
+const { updateCommentByID } = require('../controllers/comments-controller');
 
 commentsRouter
   .route('/:comment_id')

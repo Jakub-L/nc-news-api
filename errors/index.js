@@ -8,7 +8,6 @@ exports.methodNotAllowed = (req, res) => {
 
 exports.handlePSQL = (err, req, res, next) => {
   if (err.code) {
-    console.log(err);
     res.status(400).send({ msg: `Invalid Request. Database Error ${err.code}` });
   } else {
     next(err);
