@@ -66,11 +66,18 @@ const deleteArticle = (article_id) => {
     .del();
 };
 
-const selectComments = (article_id, { sort_by = 'created_at', order = 'desc' }) => {
+const selectComments = (
+  article_id,
+  {
+    sort_by = 'created_at', order = 'desc', limit: maxComments = 10, p: page = 1,
+  },
+) => {
   // Defaults checking
   const allowedSortingCriteria = ['comment_id', 'votes', 'created_at', 'author', 'body'];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['asc', 'desc'].includes(order)) order = 'desc';
+  if (Number.isNaN(+maxComments)) maxComments = 10;
+  if (Number.isNaN(+page)) page = 1;
 
   return selectArticles({ article_id }).then(([[article]]) => {
     if (!article) return Promise.reject({ status: 404 });
@@ -78,6 +85,8 @@ const selectComments = (article_id, { sort_by = 'created_at', order = 'desc' }) 
       .select('comment_id', 'votes', 'created_at', 'author', 'body')
       .from('comments')
       .where({ article_id })
+      .offset((page - 1) * maxComments)
+      .limit(maxComments)
       .orderBy(sort_by, order);
   });
 };

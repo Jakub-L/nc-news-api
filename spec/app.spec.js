@@ -373,6 +373,14 @@ describe('NC-NEWS-API', () => {
                   expect(body.comments).to.be.descendingBy('created_at');
                 });
             });
+            it('GET status:200 returns 10 comments by default', () => {
+              return request
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.have.lengthOf(10);
+                });
+            });
             it('POST status:201 adds comment to article', () => {
               return request
                 .post('/api/articles/1/comments')
@@ -411,6 +419,30 @@ describe('NC-NEWS-API', () => {
                   expect(body.comments).to.be.ascendingBy('created_at');
                 });
             });
+            it('GET status:200 returns number of comments specified by limit query', () => {
+              return request
+                .get('/api/articles/1/comments?limit=5')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.have.lengthOf(5);
+                });
+            });
+            it('GET status:200 returns page specified', () => {
+              return request
+                .get('/api/articles/1/comments?p=2')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments[0].comment_id).to.equal(12);
+                });
+            });
+            it('GET status:200 returns empty array if page is beyond maximum comments', () => {
+              return request
+                .get('/api/articles/1/comments?p=100')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.have.lengthOf(0);
+                });
+            });
           });
           describe('ERRORS', () => {
             it('ALL status:405 for invalid methods', () => {
@@ -442,6 +474,22 @@ describe('NC-NEWS-API', () => {
             });
             it('GET status:200 ignores invalid queries', () => {
               return request.get('/api/articles/1/comments?upvoted=true').expect(200);
+            });
+            it('GET status:200 defaults to 10 for invalid limit query', () => {
+              return request
+                .get('/api/articles/1/comments?limit=invalid')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.have.lengthOf(10);
+                });
+            });
+            it('GET status:200 defaults to 1 for invalid page query', () => {
+              return request
+                .get('/api/articles/1/comments?p=invalid')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments[0].comment_id).to.equal(2);
+                });
             });
             it('GET status:404 for non-existent article_id', () => {
               return request.get('/api/articles/100/comments').expect(404);
