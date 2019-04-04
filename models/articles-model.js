@@ -7,6 +7,7 @@ const selectArticles = ({
   topic,
   article_id,
   limit: maxArticles = 10,
+  p: page = 1,
 }) => {
   // Defaults checking
   const allowedSortingCriteria = [
@@ -21,6 +22,7 @@ const selectArticles = ({
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
   if (Number.isNaN(+maxArticles)) maxArticles = 10;
+  if (Number.isNaN(+page)) page = 1;
 
   return Promise.all([
     connection
@@ -43,6 +45,7 @@ const selectArticles = ({
         if (topic) query.where({ topic });
         if (article_id) query.where({ 'articles.article_id': article_id });
       })
+      .offset((page - 1) * maxArticles)
       .limit(maxArticles),
     connection('articles').count('article_id AS total_count'),
   ]);

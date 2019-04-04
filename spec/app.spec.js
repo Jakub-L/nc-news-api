@@ -124,7 +124,7 @@ describe('NC-NEWS-API', () => {
             });
         });
       });
-      describe.only('QUERIES', () => {
+      describe('QUERIES', () => {
         it('GET status:200 returns articles filtered by author query', () => {
           return request
             .get('/api/articles?author=icellusedkars')
@@ -176,8 +176,24 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.have.lengthOf(5);
             });
         });
+        it('GET status:200 returns specified page of results', () => {
+          return request
+            .get('/api/articles?p=2')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles[0].title).to.equal('Am I a cat?');
+            });
+        });
+        it('GET status:200 returns empty if page is past maximum page', () => {
+          return request
+            .get('/api/articles?p=100')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(0);
+            });
+        });
       });
-      describe.only('ERRORS', () => {
+      describe('ERRORS', () => {
         it('ALL status:405 for invalid methods', () => {
           const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
           return Promise.all(
@@ -211,6 +227,14 @@ describe('NC-NEWS-API', () => {
             .expect(200)
             .then(({ body }) => {
               expect(body.articles).to.have.lengthOf(10);
+            });
+        });
+        it('GET status:200 defaults to 1 for invalid page', () => {
+          return request
+            .get('/api/articles?p=six')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
             });
         });
       });
