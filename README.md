@@ -8,7 +8,6 @@ Backend API for a news site supporting users, articles and comments.
 - [— Prerequisites](#prerequisites)
 - [— Installation](#installation)
 - [Testing](#testing)
-- [Deployment](#deployment)
 - [Available Scripts](#available-scripts)
 - [API Reference](#api-reference)
 - [Built With](#built-with)
