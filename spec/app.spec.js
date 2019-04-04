@@ -834,6 +834,54 @@ describe('NC-NEWS-API', () => {
       });
     });
     describe('/users', () => {
+      describe('DEFAULT BEHAVIOUR', () => {
+        it('GET status:200 returns array of user objects', () => {
+          return request
+            .get('/api/users')
+            .expect(200)
+            .then(({ body }) => {
+              body.users.forEach((user) => {
+                expect(user).to.contain.keys('username', 'avatar_url', 'name');
+              });
+            });
+        });
+        it('POST status:201 adds user and returns added user', () => {
+          return request
+            .post('/api/users')
+            .send({ username: 'geoff', name: 'andy', avatar_url: 'http://www.avatars.com/1.jpg' })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.user).to.contain.keys('name', 'username', 'avatar_url');
+            });
+        });
+      });
+      describe('ERRORS', () => {
+        it('ALL status:405 for invalid methods', () => {
+          const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+          return Promise.all(
+            invalid.map((method) => {
+              return request[method]('/api/users/icellusedkars').expect(405);
+            }),
+          );
+        });
+        it('POST status:400 for missing username key', () => {
+          return request
+            .post('/api/users')
+            .send({ name: 'andy', avatar_url: 'http://www.avatars.com/1.jpg' })
+            .expect(400);
+        });
+        it('POST status:400 for missing name key', () => {
+          return request
+            .post('/api/users')
+            .send({ username: 'geoff', avatar_url: 'http://www.avatars.com/1.jpg' })
+            .expect(400);
+        });
+        it('POST status:422 for username already in use', () => {
+          return request.post('/api/users')
+            .send({ username: 'icellusedkars', name: 'andy', avatar_url: 'http://www.avatars.com/1.jpg' })
+            .expect(422);
+        });
+      });
       describe('/:username', () => {
         describe('DEFAULT BEHAVIOUR', () => {
           it('GET status:200 returns correct user object', () => {

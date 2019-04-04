@@ -4,7 +4,16 @@ const selectUsers = (username) => {
   return connection
     .select('username', 'avatar_url', 'name')
     .from('users')
-    .where({ username });
+    .modify((query) => {
+      if (username) query.where({ username });
+    });
 };
 
-module.exports = { selectUsers };
+const insertUser = (user) => {
+  return connection
+    .insert(user)
+    .into('users')
+    .returning(['username', 'avatar_url', 'name']);
+};
+
+module.exports = { selectUsers, insertUser };
