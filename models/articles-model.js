@@ -1,7 +1,12 @@
 const connection = require('../db/connection');
 
 const selectArticles = ({
-  sort_by = 'created_at', order = 'desc', author, topic, article_id,
+  sort_by = 'created_at',
+  order = 'desc',
+  author,
+  topic,
+  article_id,
+  limit: maxArticles = 10,
 }) => {
   // Defaults checking
   const allowedSortingCriteria = [
@@ -15,6 +20,7 @@ const selectArticles = ({
   ];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
+  if (Number.isNaN(+maxArticles)) maxArticles = 10;
 
   return Promise.all([
     connection
@@ -37,7 +43,7 @@ const selectArticles = ({
         if (topic) query.where({ topic });
         if (article_id) query.where({ 'articles.article_id': article_id });
       })
-      .limit(10),
+      .limit(maxArticles),
     connection('articles').count('article_id AS total_count'),
   ]);
 };

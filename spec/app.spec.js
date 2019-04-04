@@ -115,7 +115,6 @@ describe('NC-NEWS-API', () => {
               expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
             });
         });
-
         it('GET status:200 returns total article count', () => {
           return request
             .get('/api/articles')
@@ -125,7 +124,7 @@ describe('NC-NEWS-API', () => {
             });
         });
       });
-      describe('QUERIES', () => {
+      describe.only('QUERIES', () => {
         it('GET status:200 returns articles filtered by author query', () => {
           return request
             .get('/api/articles?author=icellusedkars')
@@ -169,8 +168,16 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.be.ascendingBy('created_at');
             });
         });
+        it('GET status:200 returns number of articles specified by query', () => {
+          return request
+            .get('/api/articles?limit=5')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(5);
+            });
+        });
       });
-      describe('ERRORS', () => {
+      describe.only('ERRORS', () => {
         it('ALL status:405 for invalid methods', () => {
           const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
           return Promise.all(
@@ -197,6 +204,14 @@ describe('NC-NEWS-API', () => {
         });
         it('GET status:200 ignores invalid queries', () => {
           return request.get('/api/articles?invalid=foobar').expect(200);
+        });
+        it('GET status:200 defaults to 10 for invalid limit', () => {
+          return request
+            .get('/api/articles?limit=invalid')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(10);
+            });
         });
       });
       describe('/:article_id', () => {
