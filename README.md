@@ -132,9 +132,18 @@ Returns array with all article topic objects.
 
 ---
 
-#### [GET] /api/articles
+#### [GET] /api/articles?{author}&{topic}&{sort_by}&{order}&{p}&{limit}
 
 Returns array with all article objects.
+
+**Queries:**
+
+- **`author`** (type: `string`): username of author
+- **`topic`** (type: `string`): topic of article
+- **`sort_by`** (type: `string`): name of column by which to sort returned data. Default: `created_at`
+- **`order`** (type: `string`): order of sorting, can be `asc` for ascending or `desc` for descending. Default: `desc`
+- **`p`** (type: `int`): page of results to return. Default: `1`
+- **`limit`** (type: `int`): number of entries per page. Default `10`
 
 ---
 
@@ -168,7 +177,7 @@ Removes an article with matching article ID.
 
 ---
 
-#### [GET] /api/articles/{article_id}/comments?{sort_by}&{order}
+#### [GET] /api/articles/{article_id}/comments?{sort_by}&{order}&{p}&{limit}
 
 Retrieves all comments for an article with matching article ID.
 
@@ -179,7 +188,9 @@ Retrieves all comments for an article with matching article ID.
 **Queries:**
 
 - **`sort_by`** (type: `string`): name of column by which to sort returned data. Default: `created_at`
-- **`order`** (type: `string`): order of sorting, can be `asc` for ascending or `desc` for descending. Default:
+- **`order`** (type: `string`): order of sorting, can be `asc` for ascending or `desc` for descending. Default: `desc`
+- **`p`** (type: `int`): page of results to return. Default: `1`
+- **`limit`** (type: `int`): number of entries per page. Default `10`
 
 ---
 
