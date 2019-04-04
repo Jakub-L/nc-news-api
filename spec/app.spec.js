@@ -49,18 +49,55 @@ describe('NC-NEWS-API', () => {
               });
             });
         });
+        it('POST status:201 creates new topic and returns it', () => {
+          return request
+            .post('/api/topics')
+            .send({ slug: 'curling', description: 'skipping stones, but on ice' })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.topic).to.contain.keys('slug', 'description');
+            });
+        });
       });
       describe('ERRORS', () => {
         it('GET status:404 for invalid path', () => {
           return request.get('/api/topics/invalid').expect(404);
         });
         it('ALL status:405 for invalid methods', () => {
-          const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+          const invalid = ['put', 'delete', 'options', 'trace', 'patch'];
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/topics').expect(405);
             }),
           );
+        });
+        it('POST status:400 for missing slug key', () => {
+          return request
+            .post('/api/topics')
+            .send({ description: 'skipping stones, but on ice' })
+            .expect(400);
+        });
+        it('POST status:400 for missing description key', () => {
+          return request
+            .post('/api/topics')
+            .send({ description: 'skipping stones, but on ice' })
+            .expect(400);
+        });
+        it('POST status:400 for too many keys', () => {
+          return request
+            .post('/api/topics')
+            .send({
+              slug: 'curling',
+              description: 'skipping stones, but on ice',
+              location: 'scotland',
+            })
+            .expect(400);
+        });
+        it('POST status:422 for non-unique slug', () => {
+          return request
+            .post('/api/topics')
+            .send({ slug: 'mitch', description: 'that guy' })
+            .expect(422);
         });
       });
     });
@@ -199,7 +236,6 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.be.ascendingBy('created_at');
             });
         });
-
         it('GET status:200 returns number of articles specified by query', () => {
           return request
             .get('/api/articles?limit=5')

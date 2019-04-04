@@ -17,11 +17,12 @@ exports.handle404 = (err, req, res, next) => {
 };
 
 exports.handle422 = (err, req, res, next) => {
-  const codes = ['23503'];
+  const codes = ['23503', '23505'];
   const constraints = [
     'comments_author_foreign',
     'articles_topic_foreign',
     'articles_author_foreign',
+    'topics_pkey',
   ];
   if (err.status === 422 || (codes.includes(err.code) && constraints.includes(err.constraint))) {
     res.status(422).send({ msg: 'Unprocessable Entity' });
