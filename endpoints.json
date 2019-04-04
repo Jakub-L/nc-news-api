@@ -18,6 +18,20 @@
       ]
     }
   },
+  "POST /api/topics": {
+    "description": "Adds topic to database and returns it",
+    "queries": [],
+    "exampleBody": {
+      "description": "The man, the Mitch, the legend",
+      "slug": "mitch"
+    },
+    "exampleResponse": {
+      "topic": {
+        "description": "The man, the Mitch, the legend",
+        "slug": "mitch"
+      }
+    }
+  },
   "GET /api/articles": {
     "description": "Returns array of all articles",
     "queries": ["author", "topic", "sort_by", "order", "p", "limit"],
@@ -44,6 +58,28 @@
           "comment_count": "0"
         }
       ]
+    }
+  },
+  "POST /api/articles": {
+    "description": "Adds article to table of articles",
+    "queries": [],
+    "exampleBody": {
+      "author": "butter_bridge",
+      "title": "Living in the shadow of a great man",
+      "body": "I find this existence challenging",
+      "topic": "mitch"
+    },
+    "exampleResponse": {
+      "article": {
+        "author": "butter_bridge",
+        "title": "Living in the shadow of a great man",
+        "article_id": 1,
+        "body": "I find this existence challenging",
+        "topic": "mitch",
+        "created_at": "2018-11-15T12:21:54.171Z",
+        "votes": 100,
+        "comment_count": "13"
+      }
     }
   },
   "GET /api/articles/:article_id": {
@@ -141,6 +177,40 @@
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes comment with given comment_id. Does not return anything.",
     "queries": []
+  },
+  "GET /api/users": {
+    "description": "Returns an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "icellusedkars",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+          "name": "sam"
+        },
+        {
+          "username": "geoff5000",
+          "avatar_url": "https://avatars2.com/129384.jpg",
+          "name": "adam"
+        }
+      ]
+    }
+  },
+  "POST /api/users": {
+    "description": "Adds user to table of users",
+    "queries": [],
+    "exampleBody": {
+      "username": "geof5000",
+      "name": "Adam",
+      "avatar_url": "http://www.avatars.com/2.jpg"
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "geof5000",
+        "name": "Adam",
+        "avatar_url": "http://www.avatars.com/2.jpg"
+      }
+    }
   },
   "GET /api/users/:username": {
     "description": "Returns user object for given username",
