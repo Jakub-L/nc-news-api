@@ -123,6 +123,29 @@ describe('NC-NEWS-API', () => {
               expect(body.total_count).to.equal('12');
             });
         });
+        it('POST status:201 creates new article and returns newly created article', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'icellusedkars',
+              title: 'This is a Title',
+              topic: 'mitch',
+              body: 'lorem ipsum',
+            })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.article).to.contain.keys(
+                'author',
+                'title',
+                'article_id',
+                'body',
+                'topic',
+                'created_at',
+                'votes',
+              );
+              expect(body.article.votes).to.equal(0);
+            });
+        });
       });
       describe('QUERIES', () => {
         it('GET status:200 returns articles filtered by author query', () => {
@@ -152,6 +175,14 @@ describe('NC-NEWS-API', () => {
               });
             });
         });
+        it('GET status:200 returns total article count, filtered by query', () => {
+          return request
+            .get('/api/articles?author=icellusedkars')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).to.equal('6');
+            });
+        });
         it('GET status:200 sorts articles by provided query', () => {
           return request
             .get('/api/articles?sort_by=author')
@@ -168,6 +199,7 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.be.ascendingBy('created_at');
             });
         });
+
         it('GET status:200 returns number of articles specified by query', () => {
           return request
             .get('/api/articles?limit=5')
@@ -176,9 +208,25 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.have.lengthOf(5);
             });
         });
+        it('GET status:200 truncates limit query', () => {
+          return request
+            .get('/api/articles?limit=5.7')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(5);
+            });
+        });
         it('GET status:200 returns specified page of results', () => {
           return request
             .get('/api/articles?p=2')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles[0].title).to.equal('Am I a cat?');
+            });
+        });
+        it('GET status:200 truncates page query', () => {
+          return request
+            .get('/api/articles?p=2.3')
             .expect(200)
             .then(({ body }) => {
               expect(body.articles[0].title).to.equal('Am I a cat?');
@@ -195,7 +243,7 @@ describe('NC-NEWS-API', () => {
       });
       describe('ERRORS', () => {
         it('ALL status:405 for invalid methods', () => {
-          const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+          const invalid = ['put', 'delete', 'options', 'trace', 'patch'];
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/articles').expect(405);
@@ -229,6 +277,14 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.have.lengthOf(10);
             });
         });
+        it('GET status:200 defaults to 10 for negative limit', () => {
+          return request
+            .get('/api/articles?limit=-2')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(10);
+            });
+        });
         it('GET status:200 defaults to 1 for invalid page', () => {
           return request
             .get('/api/articles?p=six')
@@ -236,6 +292,88 @@ describe('NC-NEWS-API', () => {
             .then(({ body }) => {
               expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
             });
+        });
+        it('GET status:200 defaults to 1 for negative page', () => {
+          return request
+            .get('/api/articles?p=-2')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
+            });
+        });
+        it('POST status:400 for username missing from request body', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              title: 'This is a Title',
+              topic: 'mitch',
+              body: 'lorem ipsum',
+            })
+            .expect(400);
+        });
+        it('POST status:400 for title missing from request body', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'icellusedkars',
+              topic: 'mitch',
+              body: 'lorem ipsum',
+            })
+            .expect(400);
+        });
+        it('POST status:400 for topic missing from request body', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'icellusedkars',
+              title: 'This is a Title',
+              body: 'lorem ipsum',
+            })
+            .expect(400);
+        });
+        it('POST status:400 for body missing from request body', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'icellusedkars',
+              title: 'This is a Title',
+              topic: 'mitch',
+            })
+            .expect(400);
+        });
+        it('POST status:400 for too many keys request body', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'icellusedkars',
+              title: 'This is a Title',
+              topic: 'mitch',
+              body: 'icellusedkars',
+              length: 5,
+            })
+            .expect(400);
+        });
+        it('POST status:422 for username not matching existing users', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'invalid',
+              title: 'This is a Title',
+              topic: 'mitch',
+              body: 'lorem ipsum',
+            })
+            .expect(422);
+        });
+        it('POST status:422 for topic not matching existing topics', () => {
+          return request
+            .post('/api/articles')
+            .send({
+              username: 'icellusedkars',
+              title: 'This is a Title',
+              topic: 'invalid',
+              body: 'lorem ipsum',
+            })
+            .expect(422);
         });
       });
       describe('/:article_id', () => {
@@ -427,9 +565,25 @@ describe('NC-NEWS-API', () => {
                   expect(body.comments).to.have.lengthOf(5);
                 });
             });
+            it('GET status:200 truncates limit query', () => {
+              return request
+                .get('/api/articles/1/comments?limit=5.6')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.have.lengthOf(5);
+                });
+            });
             it('GET status:200 returns page specified', () => {
               return request
                 .get('/api/articles/1/comments?p=2')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments[0].comment_id).to.equal(12);
+                });
+            });
+            it('GET status:200 truncates page query', () => {
+              return request
+                .get('/api/articles/1/comments?p=2.3')
                 .expect(200)
                 .then(({ body }) => {
                   expect(body.comments[0].comment_id).to.equal(12);
@@ -483,9 +637,25 @@ describe('NC-NEWS-API', () => {
                   expect(body.comments).to.have.lengthOf(10);
                 });
             });
+            it('GET status:200 defaults to 10 for negative limit query', () => {
+              return request
+                .get('/api/articles/1/comments?limit=-3')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments).to.have.lengthOf(10);
+                });
+            });
             it('GET status:200 defaults to 1 for invalid page query', () => {
               return request
                 .get('/api/articles/1/comments?p=invalid')
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comments[0].comment_id).to.equal(2);
+                });
+            });
+            it('GET status:200 defaults to 1 for negative page query', () => {
+              return request
+                .get('/api/articles/1/comments?p=-2')
                 .expect(200)
                 .then(({ body }) => {
                   expect(body.comments[0].comment_id).to.equal(2);

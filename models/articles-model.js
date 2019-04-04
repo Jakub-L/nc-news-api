@@ -21,8 +21,8 @@ const selectArticles = ({
   ];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
-  if (Number.isNaN(+maxArticles)) maxArticles = 10;
-  if (Number.isNaN(+page)) page = 1;
+  if (Number.isNaN(+maxArticles) || maxArticles < 0) maxArticles = 10;
+  if (Number.isNaN(+page) || page < 0) page = 1;
 
   return Promise.all([
     connection
@@ -45,10 +45,23 @@ const selectArticles = ({
         if (topic) query.where({ topic });
         if (article_id) query.where({ 'articles.article_id': article_id });
       })
-      .offset((page - 1) * maxArticles)
-      .limit(maxArticles),
-    connection('articles').count('article_id AS total_count'),
+      .offset((Math.trunc(page) - 1) * Math.trunc(maxArticles))
+      .limit(Math.trunc(maxArticles)),
+    connection('articles')
+      .modify((query) => {
+        if (author) query.where({ 'articles.author': author });
+        if (topic) query.where({ topic });
+        if (article_id) query.where({ 'articles.article_id': article_id });
+      })
+      .count('article_id AS total_count'),
   ]);
+};
+
+const insertArticle = ({ username: author, ...articleRest }) => {
+  return connection
+    .insert({ author, ...articleRest })
+    .into('articles')
+    .returning(['author', 'title', 'article_id', 'body', 'topic', 'created_at', 'votes']);
 };
 
 const updateArticle = (article_id, { inc_votes = 0 }) => {
@@ -76,8 +89,8 @@ const selectComments = (
   const allowedSortingCriteria = ['comment_id', 'votes', 'created_at', 'author', 'body'];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['asc', 'desc'].includes(order)) order = 'desc';
-  if (Number.isNaN(+maxComments)) maxComments = 10;
-  if (Number.isNaN(+page)) page = 1;
+  if (Number.isNaN(+maxComments) || maxComments < 0) maxComments = 10;
+  if (Number.isNaN(+page) || page < 1) page = 1;
 
   return selectArticles({ article_id }).then(([[article]]) => {
     if (!article) return Promise.reject({ status: 404 });
@@ -85,8 +98,8 @@ const selectComments = (
       .select('comment_id', 'votes', 'created_at', 'author', 'body')
       .from('comments')
       .where({ article_id })
-      .offset((page - 1) * maxComments)
-      .limit(maxComments)
+      .offset((Math.trunc(page) - 1) * Math.trunc(maxComments))
+      .limit(Math.trunc(maxComments))
       .orderBy(sort_by, order);
   });
 };
@@ -99,6 +112,7 @@ const insertComment = (article_id, { username: author, ...commentRemainder }) =>
 };
 module.exports = {
   selectArticles,
+  insertArticle,
   updateArticle,
   deleteArticle,
   selectComments,

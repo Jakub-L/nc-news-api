@@ -1,5 +1,6 @@
 const {
   selectArticles,
+  insertArticle,
   updateArticle,
   deleteArticle,
   selectComments,
@@ -10,6 +11,14 @@ exports.getArticles = (req, res, next) => {
   selectArticles(req.query)
     .then(([articles, [total_count]]) => {
       res.status(200).json({ ...total_count, articles });
+    })
+    .catch(next);
+};
+
+exports.addArticle = (req, res, next) => {
+  insertArticle(req.body)
+    .then(([article]) => {
+      res.status(201).json({ article });
     })
     .catch(next);
 };
