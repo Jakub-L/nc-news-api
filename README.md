@@ -8,6 +8,7 @@ Backend API for a news site supporting users, articles and comments.
 - [— Prerequisites](#prerequisites)
 - [— Installation](#installation)
 - [Testing](#testing)
+- [Deployment](#deployment)
 - [Available Scripts](#available-scripts)
 - [API Reference](#api-reference)
 - [Built With](#built-with)
@@ -98,6 +99,10 @@ Or alternatively, only the utility functions can be tested by running:
 npm run test-utils
 ```
 
+# Deployment
+
+The API is [hosted on Heroku](https://nc-news-jakub.herokuapp.com/).
+
 # Available Scripts
 
 - **`npm run setup-dbs`** - create test and development databases locally,
@@ -115,25 +120,25 @@ npm run test-utils
 
 # API Reference
 
-### [GET] /api
+#### [GET] /api
 
 Returns JSON object with all available endpoints.
 
 ---
 
-### [GET] /api/topics
+#### [GET] /api/topics
 
 Returns array with all article topic objects.
 
 ---
 
-### [GET] /api/articles
+#### [GET] /api/articles
 
 Returns array with all article objects.
 
 ---
 
-### [GET] /api/articles/{article_id}
+#### [GET] /api/articles/{article_id}
 
 Returns article object matching article ID.
 
@@ -143,7 +148,7 @@ Returns article object matching article ID.
 
 ---
 
-### [PATCH] /api/articles/{article_id}
+#### [PATCH] /api/articles/{article_id}
 
 Changes the number of votes for an article with matching article ID.
 
@@ -157,13 +162,13 @@ Changes the number of votes for an article with matching article ID.
 
 ---
 
-### [DELETE] /api/articles/{article_id}
+#### [DELETE] /api/articles/{article_id}
 
 Removes an article with matching article ID.
 
 ---
 
-### [GET] /api/articles/{article_id}/comments?{sort_by}&{order}
+#### [GET] /api/articles/{article_id}/comments?{sort_by}&{order}
 
 Retrieves all comments for an article with matching article ID.
 
@@ -178,7 +183,7 @@ Retrieves all comments for an article with matching article ID.
 
 ---
 
-### [POST] /api/articles/{article_id}/comments
+#### [POST] /api/articles/{article_id}/comments
 
 Adds a comment for an article with matching article ID.
 
@@ -193,7 +198,7 @@ Adds a comment for an article with matching article ID.
 
 ---
 
-### [PATCH] /api/comments/{comment_id}
+#### [PATCH] /api/comments/{comment_id}
 
 Changes the number of votes for a comment with matching comment ID.
 
@@ -207,13 +212,13 @@ Changes the number of votes for a comment with matching comment ID.
 
 ---
 
-### [DELETE] /api/comments/{comment_id}
+#### [DELETE] /api/comments/{comment_id}
 
 Removes a comment with matching comment ID.
 
 ---
 
-### [GET] /api/users/{username}
+#### [GET] /api/users/{username}
 
 Retrieves user object with matching username.
 
