@@ -99,6 +99,31 @@ describe('NC-NEWS-API', () => {
               expect(body.articles).to.be.descendingBy('created_at');
             });
         });
+        it('GET status:200 returns 10 articles by default', () => {
+          return request
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(10);
+            });
+        });
+        it('GET status:200 returns first page by default', () => {
+          return request
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
+            });
+        });
+
+        it('GET status:200 returns total article count', () => {
+          return request
+            .get('/api/articles')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.total_count).to.equal('12');
+            });
+        });
       });
       describe('QUERIES', () => {
         it('GET status:200 returns articles filtered by author query', () => {
@@ -545,9 +570,6 @@ describe('NC-NEWS-API', () => {
           });
         });
       });
-    });
-    describe('/*', () => {
-      describe('ERRORS', () => {});
     });
   });
   describe('/*', () => {

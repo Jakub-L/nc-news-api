@@ -8,8 +8,8 @@ const {
 
 exports.getArticles = (req, res, next) => {
   selectArticles(req.query)
-    .then((articles) => {
-      res.status(200).json({ articles });
+    .then(([articles, [total_count]]) => {
+      res.status(200).json({ ...total_count, articles });
     })
     .catch(next);
 };
@@ -17,7 +17,7 @@ exports.getArticles = (req, res, next) => {
 exports.getArticleByID = (req, res, next) => {
   const { article_id } = req.params;
   selectArticles({ ...req.query, article_id })
-    .then(([article]) => {
+    .then(([[article]]) => {
       if (!article) next({ status: 404 });
       else res.status(200).json({ article });
     })
@@ -26,7 +26,7 @@ exports.getArticleByID = (req, res, next) => {
 
 exports.updateArticleByID = (req, res, next) => {
   updateArticle(req.params.article_id, req.body)
-    .then(([article]) => {
+    .then(([[article]]) => {
       if (!article) next({ status: 404 });
       else res.status(200).json({ article });
     })

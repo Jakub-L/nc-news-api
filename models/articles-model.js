@@ -16,26 +16,30 @@ const selectArticles = ({
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
 
-  return connection
-    .select(
-      'articles.author',
-      'title',
-      'articles.article_id',
-      'articles.body',
-      'topic',
-      'articles.created_at',
-      'articles.votes',
-    )
-    .from('articles')
-    .leftJoin('comments', 'articles.article_id', 'comments.article_id')
-    .count('comments.article_id AS comment_count')
-    .groupBy('articles.article_id')
-    .orderBy(sort_by, order)
-    .modify((query) => {
-      if (author) query.where({ 'articles.author': author });
-      if (topic) query.where({ topic });
-      if (article_id) query.where({ 'articles.article_id': article_id });
-    });
+  return Promise.all([
+    connection
+      .select(
+        'articles.author',
+        'title',
+        'articles.article_id',
+        'articles.body',
+        'topic',
+        'articles.created_at',
+        'articles.votes',
+      )
+      .from('articles')
+      .leftJoin('comments', 'articles.article_id', 'comments.article_id')
+      .count('comments.article_id AS comment_count')
+      .groupBy('articles.article_id')
+      .orderBy(sort_by, order)
+      .modify((query) => {
+        if (author) query.where({ 'articles.author': author });
+        if (topic) query.where({ topic });
+        if (article_id) query.where({ 'articles.article_id': article_id });
+      })
+      .limit(10),
+    connection('articles').count('article_id AS total_count'),
+  ]);
 };
 
 const updateArticle = (article_id, { inc_votes = 0 }) => {
@@ -59,7 +63,7 @@ const selectComments = (article_id, { sort_by = 'created_at', order = 'desc' }) 
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['asc', 'desc'].includes(order)) order = 'desc';
 
-  return selectArticles({ article_id }).then(([article]) => {
+  return selectArticles({ article_id }).then(([[article]]) => {
     if (!article) return Promise.reject({ status: 404 });
     return connection
       .select('comment_id', 'votes', 'created_at', 'author', 'body')
