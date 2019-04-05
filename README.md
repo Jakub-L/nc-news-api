@@ -138,8 +138,8 @@ Adds topic to table of topics and returns the newly added object.
 
 **Body Params:**
 
--- **`slug`** (type: `string`): unique identifier of topic 
--- **`description`** (type: `string`): description of the topic
+- **`slug`** (type: `string`): unique identifier of topic
+- **`description`** (type: `string`): description of the topic
 
 ---
 
@@ -164,10 +164,10 @@ Adds article to table of articles and returns the newly added object.
 
 **Body Params:**
 
--- **`author`** (type: `string`): username of author 
--- **`title`** (type: `string`): article title
--- **`body`** (type: `string`): article content
--- **`topic`** (type: `string`): slug of topic of article
+- **`author`** (type: `string`): username of author
+- **`title`** (type: `string`): article title
+- **`body`** (type: `string`): article content
+- **`topic`** (type: `string`): slug of topic of article
 
 ---
 
@@ -265,9 +265,9 @@ Adds user to users table and returns newly added object
 
 **Body Params:**
 
--- **`username`** (type: `string`): unique username identifier for user
--- **`name`** (type: `string`): user's name
--- **`avatar_url`** (type: `string`): url leading to user's avatar
+- **`username`** (type: `string`): unique username identifier for user
+- **`name`** (type: `string`): user's name
+- **`avatar_url`** (type: `string`): url leading to user's avatar
 
 ---
 
