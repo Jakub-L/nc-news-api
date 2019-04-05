@@ -132,6 +132,17 @@ Returns array with all article topic objects.
 
 ---
 
+#### [POST] /api/topics
+
+Adds topic to table of topics and returns the newly added object.
+
+**Body Params:**
+
+-- **`slug`** (type: `string`): unique identifier of topic 
+-- **`description`** (type: `string`): description of the topic
+
+---
+
 #### [GET] /api/articles?{author}&{topic}&{sort_by}&{order}&{p}&{limit}
 
 Returns array with all article objects.
@@ -144,6 +155,19 @@ Returns array with all article objects.
 - **`order`** (type: `string`): order of sorting, can be `asc` for ascending or `desc` for descending. Default: `desc`
 - **`p`** (type: `int`): page of results to return. Default: `1`
 - **`limit`** (type: `int`): number of entries per page. Default `10`
+
+---
+
+#### [POST] /api/articles
+
+Adds article to table of articles and returns the newly added object.
+
+**Body Params:**
+
+-- **`author`** (type: `string`): username of author 
+-- **`title`** (type: `string`): article title
+-- **`body`** (type: `string`): article content
+-- **`topic`** (type: `string`): slug of topic of article
 
 ---
 
@@ -226,6 +250,24 @@ Changes the number of votes for a comment with matching comment ID.
 #### [DELETE] /api/comments/{comment_id}
 
 Removes a comment with matching comment ID.
+
+---
+
+#### [GET] /api/users
+
+Returns array of all users.
+
+---
+
+#### [POST] /api/users
+
+Adds user to users table and returns newly added object
+
+**Body Params:**
+
+-- **`username`** (type: `string`): unique username identifier for user
+-- **`name`** (type: `string`): user's name
+-- **`avatar_url`** (type: `string`): url leading to user's avatar
 
 ---
 
