@@ -18,6 +18,7 @@ const selectArticles = ({
     'topic',
     'created_at',
     'votes',
+    'comment_count'
   ];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
