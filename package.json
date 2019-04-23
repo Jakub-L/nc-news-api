@@ -24,6 +24,7 @@
   "author": "Jakub P. Lech",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "knex": "^0.16.4-next2",
     "pg": "^7.9.0"
