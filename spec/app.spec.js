@@ -29,7 +29,7 @@ describe('NC-NEWS-API', () => {
         return request.get('/api/invalid').expect(404);
       });
       it('ALL status:405 for invalid methods', () => {
-        const invalid = ['post', 'put', 'delete', 'patch', 'options', 'trace'];
+        const invalid = ['post', 'put', 'delete', 'patch', 'trace'];
         return Promise.all(
           invalid.map((method) => {
             return request[method]('/api').expect(405);
@@ -64,7 +64,7 @@ describe('NC-NEWS-API', () => {
           return request.get('/api/topics/invalid').expect(404);
         });
         it('ALL status:405 for invalid methods', () => {
-          const invalid = ['put', 'delete', 'options', 'trace', 'patch'];
+          const invalid = ['put', 'delete', 'trace', 'patch'];
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/topics').expect(405);
@@ -279,7 +279,7 @@ describe('NC-NEWS-API', () => {
       });
       describe('ERRORS', () => {
         it('ALL status:405 for invalid methods', () => {
-          const invalid = ['put', 'delete', 'options', 'trace', 'patch'];
+          const invalid = ['put', 'delete', 'trace', 'patch'];
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/articles').expect(405);
@@ -304,6 +304,9 @@ describe('NC-NEWS-API', () => {
         });
         it('GET status:200 ignores invalid queries', () => {
           return request.get('/api/articles?invalid=foobar').expect(200);
+        });
+        it('GET status:404 for non-existent topic query', () => {
+          return request.get('/api/articles?topic=invalid').expect(404);
         });
         it('GET status:200 defaults to 10 for invalid limit', () => {
           return request
@@ -474,7 +477,7 @@ describe('NC-NEWS-API', () => {
         });
         describe('ERRORS', () => {
           it('ALL status:405 for invalid methods', () => {
-            const invalid = ['post', 'put', 'options', 'trace'];
+            const invalid = ['post', 'put', 'trace'];
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/articles/1').expect(405);
@@ -636,7 +639,7 @@ describe('NC-NEWS-API', () => {
           });
           describe('ERRORS', () => {
             it('ALL status:405 for invalid methods', () => {
-              const invalid = ['put', 'delete', 'trace', 'options', 'patch'];
+              const invalid = ['put', 'delete', 'trace', 'patch'];
               return Promise.all(
                 invalid.map((method) => {
                   return request[method]('/api/articles/1/comments').expect(405);
@@ -790,7 +793,7 @@ describe('NC-NEWS-API', () => {
             return request.get('/api/comments/1/invalid').expect(404);
           });
           it('ALL status:405 for invalid methods', () => {
-            const invalid = ['get', 'post', 'put', 'options', 'trace'];
+            const invalid = ['get', 'post', 'put', 'trace'];
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/comments/1').expect(405);
@@ -857,7 +860,7 @@ describe('NC-NEWS-API', () => {
       });
       describe('ERRORS', () => {
         it('ALL status:405 for invalid methods', () => {
-          const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+          const invalid = ['post', 'put', 'delete', 'trace', 'patch'];
           return Promise.all(
             invalid.map((method) => {
               return request[method]('/api/users/icellusedkars').expect(405);
@@ -877,8 +880,13 @@ describe('NC-NEWS-API', () => {
             .expect(400);
         });
         it('POST status:422 for username already in use', () => {
-          return request.post('/api/users')
-            .send({ username: 'icellusedkars', name: 'andy', avatar_url: 'http://www.avatars.com/1.jpg' })
+          return request
+            .post('/api/users')
+            .send({
+              username: 'icellusedkars',
+              name: 'andy',
+              avatar_url: 'http://www.avatars.com/1.jpg',
+            })
             .expect(422);
         });
       });
@@ -899,7 +907,7 @@ describe('NC-NEWS-API', () => {
             return request.get('/api/users/icellusedkars/invalid').expect(404);
           });
           it('ALL status:405 for invalid methods', () => {
-            const invalid = ['post', 'put', 'delete', 'options', 'trace', 'patch'];
+            const invalid = ['post', 'put', 'delete', 'trace', 'patch'];
             return Promise.all(
               invalid.map((method) => {
                 return request[method]('/api/users/icellusedkars').expect(405);

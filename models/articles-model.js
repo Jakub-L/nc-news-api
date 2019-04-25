@@ -18,7 +18,7 @@ const selectArticles = ({
     'topic',
     'created_at',
     'votes',
-    'comment_count'
+    'comment_count',
   ];
   if (!allowedSortingCriteria.includes(sort_by)) sort_by = 'created_at';
   if (!['desc', 'asc'].includes(order)) order = 'desc';
@@ -55,6 +55,15 @@ const selectArticles = ({
         if (article_id) query.where({ 'articles.article_id': article_id });
       })
       .count('article_id AS total_count'),
+    connection
+      .select('slug')
+      .from('topics')
+      .modify((query) => {
+        if (topic) query.where({ slug: topic });
+      })
+      .then((topics) => {
+        if (topics.length === 0) return Promise.reject({ status: 404 });
+      }),
   ]);
 };
 
